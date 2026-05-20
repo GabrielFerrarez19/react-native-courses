@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Image,
   ScrollView,
@@ -13,50 +14,119 @@ import { Input } from "@/components/Input";
 import { Filter } from "@/components/Filter";
 import { FilterStatus } from "@/types/FilterStatus";
 import { Item } from "@/components/Item";
+import { useEffect, useState } from "react";
+import { itemsStorage, ItemStorage } from "@/storage/itensStorage";
 
 const FILTER_STATUS: FilterStatus[] = [FilterStatus.PENDING, FilterStatus.DONE];
 
-const ITEMS = [
-  {
-    id: "1",
-    status: FilterStatus.DONE,
-    description: "1 pacote de café",
-  },
-  {
-    id: "2",
-    status: FilterStatus.PENDING,
-    description: "2 litros de leite integral",
-  },
-  {
-    id: "3",
-    status: FilterStatus.PENDING,
-    description: "1 kg de açúcar refinado",
-  },
-];
-
 export function Home() {
-  console.log("Items", ITEMS);
+  const [filter, setFilter] = useState<FilterStatus>(FilterStatus.PENDING);
+  const [description, setdescription] = useState("");
+  const [items, setItems] = useState<ItemStorage[]>([]);
+
+  async function handleAdd() {
+    if (!description.trim()) {
+      return Alert.alert("Adicionar", "informa a descrição para adicionar");
+    }
+
+    const newItem = {
+      id: Math.random().toString(36).substring(2),
+      description,
+      status: FilterStatus.PENDING,
+    };
+
+    await itemsStorage.add(newItem);
+    await itemsByStatus();
+    setdescription("");
+    if (filter === FilterStatus.DONE) {
+      setFilter(FilterStatus.PENDING);
+    }
+
+    Alert.alert("Adicionado", `Adicionado ${description}`);
+  }
+
+  async function itemsByStatus() {
+    try {
+      const response = await itemsStorage.getByStatus(filter);
+      setItems(response);
+    } catch (error) {
+      Alert.alert("Error", "Não foi possivel filtrar os items.");
+    }
+  }
+
+  async function handleRemove(id: string) {
+    try {
+      await itemsStorage.remove(id);
+      await itemsByStatus();
+    } catch (error) {
+      Alert.alert("Error", "Não foi possivel remover o item.");
+    }
+  }
+
+  function handleCLear() {
+    Alert.alert("Limpar", "Deseja remover todos", [
+      { text: "Sim", onPress: () => onClear() },
+      {
+        text: "Não",
+        style: "cancel",
+      },
+    ]);
+  }
+
+  async function onClear() {
+    try {
+      await itemsStorage.clear();
+      setItems([]);
+    } catch (error) {
+      Alert.alert("Error", "Não foi possivel remover todos os itens");
+    }
+  }
+
+  async function handleToggleItemStatus(id: string) {
+    try {
+      await itemsStorage.toggleStatus(id);
+      await itemsByStatus();
+    } catch (error) {
+      Alert.alert("Error", "Não foi possivel alterar o status");
+    }
+  }
+
+  useEffect(() => {
+    itemsByStatus();
+  }, [filter]);
 
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={require("@/assets/logo.png")} />
       <View style={styles.form}>
-        <Input placeholder="O que você precisa comprar?" />
-        <Button title="Entrar" />
+        <Input
+          placeholder="O que você precisa comprar?"
+          onChangeText={setdescription}
+          value={description}
+        />
+        <Button title="Adicionar" onPress={handleAdd} />
       </View>
 
       <View style={styles.content}>
         <View style={styles.header}>
           {FILTER_STATUS.map((status) => (
-            <Filter key={status} status={status} isActive />
+            <Filter
+              key={status}
+              status={status}
+              isActive={status === filter}
+              onPress={() => setFilter(status)}
+            />
           ))}
-          <TouchableOpacity style={styles.clearButton}>
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={() => handleCLear()}
+          >
             <Text style={styles.clearText}>Limpar</Text>
           </TouchableOpacity>
         </View>
 
         <FlatList
-          data={ITEMS}
+          data={items}
           keyExtractor={(item) => String(item.id)}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -67,8 +137,8 @@ export function Home() {
           renderItem={({ item }) => (
             <Item
               data={item}
-              onRemove={() => console.log("Remover")}
-              onStatus={() => console.log("Muda o status")}
+              onRemove={() => handleRemove(item.id)}
+              onStatus={() => handleToggleItemStatus(item.id)}
             />
           )}
         />
