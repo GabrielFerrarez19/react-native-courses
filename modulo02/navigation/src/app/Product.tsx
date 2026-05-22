@@ -2,6 +2,7 @@ import { ButtonIcon } from "@/components/ButtonIcon";
 import { Header } from "@/components/Header";
 import { Title } from "@/components/Title";
 import { BottomRoutesProps } from "@/routes/BottomRoutes";
+import { DrawerRoutesProps } from "@/routes/DrawerRoutes";
 import { StackRoutesProps } from "@/routes/StackRoutes";
 import { useRoute } from "@react-navigation/native";
 // import { useNavigation } from "@react-navigation/native";
@@ -9,7 +10,7 @@ import { View } from "react-native";
 
 // type RouteParam = StackRoutesProps<"product">;
 
-export function Product({ navigation, route }: BottomRoutesProps<"product">) {
+export function Product({ navigation, route }: DrawerRoutesProps<"product">) {
   // const navigation = useNavigation();
   // const { params } = useRoute<RouteParam["route"]>();
   return (
