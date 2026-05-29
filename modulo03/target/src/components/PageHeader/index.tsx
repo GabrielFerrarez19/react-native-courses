@@ -9,7 +9,7 @@ type Props = {
   subtitle?: string;
   rightButtom?: {
     onPress: () => void;
-    icone: keyof typeof MaterialIcons.glyphMap;
+    icon: keyof typeof MaterialIcons.glyphMap;
   };
 };
 
@@ -23,7 +23,7 @@ export function PageHeader({ title, subtitle, rightButtom }: Props) {
         {rightButtom && (
           <TouchableOpacity onPress={rightButtom.onPress}>
             <MaterialIcons
-              name={rightButtom.icone}
+              name={rightButtom.icon}
               size={24}
               color={colors.gray[500]}
             />

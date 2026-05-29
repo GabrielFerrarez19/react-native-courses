@@ -33,7 +33,7 @@ export function useTargetDatabase() {
     });
   }
 
-  async function listBysavedValue() {
+  async function listByPercentageValue() {
     return database.getAllAsync<TargetResponse>(`
         
             SELECT 
@@ -46,7 +46,7 @@ export function useTargetDatabase() {
                 targets.updated_at
             FROM targets LEFT JOIN transactions ON targets.id = transactions.target_id
             GROUP BY targets.id,targets.name,targets.amount
-            ORDER BY current DESC
+            ORDER BY percentage DESC
         `);
   }
 
@@ -88,7 +88,7 @@ export function useTargetDatabase() {
   }
   return {
     create,
-    listBysavedValue,
+    listByPercentageValue,
     show,
     update,
     remove,

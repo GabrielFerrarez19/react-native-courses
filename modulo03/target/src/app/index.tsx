@@ -1,29 +1,30 @@
 import { Button } from "@/components/Button";
-import { HomeHeader } from "@/components/HomeHeader";
+import { HomeHeader, HomeHeaderProps } from "@/components/HomeHeader";
 import { List } from "@/components/List";
 import { Loading } from "@/components/Loading";
 import { Target, TargetProps } from "@/components/Target";
 import { useTargetDatabase } from "@/database/useTargetDatabase";
+import { useTransactionsDatabase } from "@/database/useTransactionsDatabase";
 import { numberToCurrency } from "@/utils/numberToCurrency";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, StatusBar, View } from "react-native";
 
-const summary = {
-  total: "R$ 2.680,00",
-  input: { label: "Entradas", value: "R$ 6,184.90" },
-  output: { label: "Saidas", value: "-R$ 883.65" },
-};
-
 export default function Index() {
   const [isFetching, setIsFetching] = useState(true);
   const [targets, setTargets] = useState<TargetProps[]>([]);
+  const [summary, setSummary] = useState<HomeHeaderProps>({
+    total: "R$ 0,00",
+    input: { label: "Entrada", value: "R$ 0,00" },
+    output: { label: "Saída", value: "R$ 0,00" },
+  });
 
   const targetDatabase = useTargetDatabase();
+  const transactionsDatabase = useTransactionsDatabase();
 
   async function fetchTargets(): Promise<TargetProps[]> {
     try {
-      const response = await targetDatabase.listBysavedValue();
+      const response = await targetDatabase.listByPercentageValue();
 
       console.log(response);
 
@@ -41,12 +42,51 @@ export default function Index() {
     }
   }
 
+  async function fetchSummary(): Promise<HomeHeaderProps> {
+    try {
+      const response = await transactionsDatabase.summary();
+
+      return {
+        total: numberToCurrency(
+          (response?.input || 0) + (response?.output || 0),
+        ),
+        input: {
+          label: "Entrada",
+          value: numberToCurrency(response?.input || 0),
+        },
+        output: {
+          label: "Saida",
+          value: numberToCurrency(response?.output || 0),
+        },
+      };
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Erro", "Não foi possivel carregar o resumo");
+      return {
+        total: numberToCurrency(0),
+        input: {
+          label: "Entrada",
+          value: numberToCurrency(0),
+        },
+        output: {
+          label: "Saida",
+          value: numberToCurrency(0),
+        },
+      };
+    }
+  }
+
   async function fetchData() {
     const targetDataPromise = fetchTargets();
+    const fetchSummaryPromise = fetchSummary();
 
-    const [targetData] = await Promise.all([targetDataPromise]);
+    const [targetData, dataSummay] = await Promise.all([
+      targetDataPromise,
+      fetchSummaryPromise,
+    ]);
 
     setTargets(targetData);
+    setSummary(dataSummay);
     setIsFetching(false);
   }
 
