@@ -1,4 +1,4 @@
-import { colors } from "./src/shared/colors";
+const { colors } = require("./src/shared/colors");
 
 module.exports = {
   content: ["./src/**/*.{ts,tsx}"],
@@ -20,7 +20,9 @@ module.exports = {
       height: {
         button: 57,
       },
-      colors,
+      colors: {
+        ...colors,
+      },
     },
   },
   plugins: [],
