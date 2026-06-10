@@ -7,7 +7,10 @@ export const AuthHeader = () => {
   if (keybordIsVisible) return <></>;
   return (
     <View className="items-center justify-center w-full min-h-40">
-      <Image source={require("@/assets/Logo.png")} />
+      <Image
+        source={require("@/assets/Logo.png")}
+        className="h-[48px] w-[255px]"
+      />
     </View>
   );
 };

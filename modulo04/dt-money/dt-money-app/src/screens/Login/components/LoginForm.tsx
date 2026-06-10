@@ -1,7 +1,7 @@
 import { AppButton } from "@/components/AppButton";
 import { AppInput } from "@/components/AppInput";
 import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { PublicStackParamsList } from "@/routes/PublicRoutes";
 import { Register } from "@/screens/Register";
@@ -9,6 +9,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { LoginSchema } from "@/schema/LoginForm";
 import { useAuthContext } from "@/context/auth.context";
 import { AxiosError } from "axios";
+import { AppError } from "@/shared/helpers/AppError";
+import { useSnacbarContext } from "@/context/snackbar.context";
+import { useErrorHandler } from "@/shared/hooks/useErrorhandler";
+import { colors } from "@/shared/colors";
 
 export interface FormLoginParams {
   email: string;
@@ -19,7 +23,7 @@ export const LoginForm = () => {
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitted },
   } = useForm<FormLoginParams>({
     defaultValues: {
       email: "",
@@ -28,7 +32,11 @@ export const LoginForm = () => {
     resolver: yupResolver(LoginSchema),
   });
 
+  const { notify } = useSnacbarContext();
+
   const { handleAuthenticate } = useAuthContext();
+
+  const { handlerError } = useErrorHandler();
 
   const navigation = useNavigation<NavigationProp<PublicStackParamsList>>();
 
@@ -37,10 +45,8 @@ export const LoginForm = () => {
       await handleAuthenticate(userData);
       console.log("userData", userData);
     } catch (error) {
-      if (error instanceof AxiosError) {
-        console.log(error.response?.data);
-      }
-      console.log(error);
+      handlerError(error, "Falha ao logar");
+    } finally {
     }
   };
 
@@ -65,7 +71,11 @@ export const LoginForm = () => {
       />
       <View className="flex-1 justify-between mt-8 mb-6 min-h-[250px]">
         <AppButton iconsName="arrow-forward" onPress={handleSubmit(onSubmit)}>
-          Login
+          {isSubmitted ? (
+            <ActivityIndicator color={colors.white}></ActivityIndicator>
+          ) : (
+            "Login"
+          )}
         </AppButton>
 
         <View>

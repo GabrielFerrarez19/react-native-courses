@@ -1,12 +1,25 @@
-import { Login } from "@/screens/Login/index";
 import "./src/styles/global.css";
 import { NavigationRoutes } from "@/routes";
 import { AuthContextProvider } from "@/context/auth.context";
+import { SnackbarContextProvider } from "@/context/snackbar.context";
+import { Snackbar } from "@/components/Snackbar";
+import { BottomSheetProvider } from "@/context/bottomsheet.context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { TransactionContextProvider } from "@/context/transactions.contect";
 
 export default function App() {
   return (
-    <AuthContextProvider>
-      <NavigationRoutes />
-    </AuthContextProvider>
+    <GestureHandlerRootView>
+      <SnackbarContextProvider>
+        <AuthContextProvider>
+          <TransactionContextProvider>
+            <BottomSheetProvider>
+              <NavigationRoutes />
+              <Snackbar />
+            </BottomSheetProvider>
+          </TransactionContextProvider>
+        </AuthContextProvider>
+      </SnackbarContextProvider>
+    </GestureHandlerRootView>
   );
 }

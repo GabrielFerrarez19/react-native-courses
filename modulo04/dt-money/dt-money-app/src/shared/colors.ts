@@ -1,14 +1,24 @@
 export const colors = {
-  "accent-brand-background-primary": "#015F43",
-  "accent-brand": "#00875F",
-  "accent-brand-light": "#00B37E",
-  "accent-red-background-primary": "#AA2834",
-  "accent-red": "#F75A68",
-  "accent-blue": "#5A86F7",
-  "accent-blue-background-primary": "#284DAA",
-  "background-primary": "#121214",
-  "background-secondary": "#202024",
-  "background-tertiary": "#29292E",
+  accent: {
+    brand: {
+      DEFAULT: "#00875F",
+      light: "#00B37E",
+      "background-primary": "#015F43",
+    },
+    red: {
+      DEFAULT: "#F75A68",
+      "background-primary": "#AA2834",
+    },
+    blue: {
+      DEFAULT: "#5A86F7",
+      "background-primary": "#284DAA",
+    },
+  },
+  background: {
+    primary: "#121214",
+    secondary: "#202024",
+    tertiary: "#29292E",
+  },
   white: "#FFFFFF",
   gray: {
     800: "#323238",

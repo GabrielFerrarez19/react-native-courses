@@ -56,7 +56,7 @@ export const AppInput = <T extends FieldValues>({
                 <MaterialIcons
                   name={leftIconName}
                   color={clsx(
-                    isFocused ? colors["accent-brand"] : colors.gray[600],
+                    isFocused ? colors.accent.brand.DEFAULT : colors.gray[600],
                   )}
                   size={24}
                   className="mr-2"
