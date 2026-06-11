@@ -21,7 +21,7 @@ export const BottomSheetContext = createContext({} as BottomSheetContextType);
 
 export const BottomSheetProvider: FC<PropsWithChildren> = ({ children }) => {
   const [content, setContent] = useState<React.ReactNode | null>(null);
-  const [index, setIndex] = useState(-1);
+  const [index, setIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
   const bottomSheetRef = useRef<BottomSheet>(null);

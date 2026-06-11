@@ -9,7 +9,7 @@ type AppButtonMode = "fill" | "outline";
 
 interface AppButtomParams extends TouchableOpacityProps {
   mode?: AppButtonMode;
-  iconsName: keyof typeof MaterialIcons.glyphMap;
+  iconsName?: keyof typeof MaterialIcons.glyphMap;
 }
 
 export const AppButton: FC<PropsWithChildren<AppButtomParams>> = ({
