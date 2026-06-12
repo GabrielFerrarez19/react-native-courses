@@ -9,13 +9,18 @@ import {
 } from "react";
 import * as transactionService from "@/shared/services/dt-money/transaction.service";
 import { CreateTransactionInterface } from "@/shared/interfaces/https/create-transaction-resquest";
-import { Transaction } from "@/shared/interfaces/transaction";
+import {
+  TotalTransactions,
+  Transaction,
+} from "@/shared/interfaces/transaction";
 
 export type TransactionContextType = {
   fetchCategories: () => Promise<void>;
   createTransaction: (params: CreateTransactionInterface) => Promise<void>;
   fetchTransactions: () => Promise<void>;
   categories: TransctionCategory[];
+  totalTransaction: TotalTransactions;
+  transactions: Transaction[];
 };
 
 export const TransactionContext = createContext({} as TransactionContextType);
@@ -25,6 +30,11 @@ export const TransactionContextProvider: FC<PropsWithChildren> = ({
 }) => {
   const [categories, setCategories] = useState<TransctionCategory[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalTransaction, setTotalTransaction] = useState<TotalTransactions>({
+    expense: 0,
+    revenue: 0,
+    total: 0,
+  });
   console.log(transactions);
 
   const fetchCategories = async () => {
@@ -44,12 +54,15 @@ export const TransactionContextProvider: FC<PropsWithChildren> = ({
     });
 
     setTransactions(transactionsResposne.data);
+    setTotalTransaction(transactionsResposne.totalTransactions);
   }, []);
 
   return (
     <TransactionContext.Provider
       value={{
         categories,
+        totalTransaction,
+        transactions,
         fetchCategories,
         createTransaction,
         fetchTransactions,
