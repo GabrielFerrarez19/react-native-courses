@@ -25,6 +25,9 @@
     },
     "experiments": {
       "tsconfigPaths": true
-    }
+    },
+    "plugins": [
+      "@react-native-community/datetimepicker"
+    ]
   }
 }

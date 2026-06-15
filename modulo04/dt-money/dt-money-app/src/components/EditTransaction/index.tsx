@@ -1,6 +1,6 @@
 import { useBottomSheetContext } from "@/context/bottomsheet.context";
 import { colors } from "@/shared/colors";
-import { CreateTransactionInterface } from "@/shared/interfaces/https/transaction-resquest";
+import { UpdateTransactionInterface } from "@/shared/interfaces/https/transaction-resquest";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
@@ -14,43 +14,51 @@ import { AppButton } from "../AppButton";
 import { ErrorMessage } from "../ErrorMessage";
 import { useTransactionContext } from "@/context/transactions.contect";
 import { useErrorHandler } from "@/shared/hooks/useErrorhandler";
+import { Transaction } from "@/shared/interfaces/transaction";
 
-type ValidationsErrors = Record<keyof CreateTransactionInterface, string>;
+type ValidationsErrors = Record<keyof UpdateTransactionInterface, string>;
 
-export const NewTransaction = () => {
-  const [transaction, setTransaction] = useState<CreateTransactionInterface>({
-    categoryId: 0,
-    description: "",
-    typeId: 0,
-    value: 0,
+interface Params {
+  transaction: Transaction;
+}
+
+export const EditTransaction = ({
+  transaction: transactionToUpdate,
+}: Params) => {
+  const [transaction, setTransaction] = useState<UpdateTransactionInterface>({
+    categoryId: transactionToUpdate.categoryId,
+    description: transactionToUpdate.description,
+    id: transactionToUpdate.id,
+    typeId: transactionToUpdate.typeId,
+    value: transactionToUpdate.value,
   });
 
   const [validationErrors, setValidationErros] = useState<ValidationsErrors>();
-  const { createTransaction } = useTransactionContext();
+  const { updateTransactions } = useTransactionContext();
   const { handlerError } = useErrorHandler();
 
   const [isLoading, setIsLoaging] = useState(false);
 
-  const handleCreateTransaction = async () => {
+  const handleUpdateTransaction = async () => {
     try {
       setIsLoaging(true);
       await transactionSchema.validate(transaction, {
         abortEarly: false,
       });
-      await createTransaction(transaction);
+      await updateTransactions(transaction);
     } catch (error) {
       if (error instanceof yup.ValidationError) {
         const errors = {} as ValidationsErrors;
 
         error.inner.forEach((err) => {
           if (err.path) {
-            errors[err.path as keyof CreateTransactionInterface] = err.message;
+            errors[err.path as keyof UpdateTransactionInterface] = err.message;
           }
         });
 
         setValidationErros(errors);
       } else {
-        handlerError(error, "Falha ao criar transação");
+        handlerError(error, "Falha ao atualizar a transação");
       }
     } finally {
       setIsLoaging(false);
@@ -61,7 +69,7 @@ export const NewTransaction = () => {
   console.log(validationErrors);
 
   const setTrnsactionsData = (
-    key: keyof CreateTransactionInterface,
+    key: keyof UpdateTransactionInterface,
     value: string | number,
   ) => {
     setTransaction((prevData) => ({ ...prevData, [key]: value }));
@@ -74,7 +82,9 @@ export const NewTransaction = () => {
         className="w-full flex-row items-center justify-between"
         onPress={closeBottomSheet}
       >
-        <Text className="text-white text-xl font-bold">Nova transação</Text>
+        <Text className="text-white text-xl font-bold">
+          Atualizar transação
+        </Text>
         <MaterialIcons name="close" color={colors.gray[700]} size={20} />
       </TouchableOpacity>
       <View className="flex-1 mt-8 mb-8">
@@ -120,11 +130,11 @@ export const NewTransaction = () => {
         )}
 
         <View className="my-4">
-          <AppButton onPress={handleCreateTransaction}>
+          <AppButton onPress={handleUpdateTransaction}>
             {isLoading ? (
               <ActivityIndicator color={colors.white} />
             ) : (
-              "Registrar"
+              "Atualizar"
             )}
           </AppButton>
         </View>

@@ -23,7 +23,6 @@ export const DeleteModal: FC<Params> = ({
   handleDeleteTransaction,
   loading,
 }) => {
-  console.log(visible);
   return (
     <View className="flex-1 absolute">
       <Modal

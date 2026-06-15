@@ -10,12 +10,15 @@ type AppButtonMode = "fill" | "outline";
 interface AppButtomParams extends TouchableOpacityProps {
   mode?: AppButtonMode;
   iconsName?: keyof typeof MaterialIcons.glyphMap;
+  widthFull?: boolean;
 }
 
 export const AppButton: FC<PropsWithChildren<AppButtomParams>> = ({
   children,
   mode = "fill",
   iconsName,
+  className,
+  widthFull = true,
   ...rest
 }) => {
   const isFill = mode === "fill";
@@ -24,7 +27,9 @@ export const AppButton: FC<PropsWithChildren<AppButtomParams>> = ({
     <TouchableOpacity
       {...rest}
       className={twMerge(
-        "w-full rounded-xl px-5 flex-row items-center h-16 ",
+        widthFull && "w-full",
+        className,
+        "rounded-xl px-5 flex-row items-center h-16 ",
         iconsName ? "justify-between" : "justify-center",
         isFill
           ? "bg-accent-brand"

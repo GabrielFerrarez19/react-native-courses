@@ -24,8 +24,6 @@ export const BottomSheetProvider: FC<PropsWithChildren> = ({ children }) => {
   const [index, setIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log("Entrou aqui");
-
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = ["70%", "90%"];
 
